@@ -1,0 +1,133 @@
+@import "tailwindcss";
+
+@theme {
+  --font-sans: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  /* NUEVO: fuente mono para detalles técnicos */
+  --font-mono: "JetBrains Mono", ui-monospace, monospace;
+  --animate-marquee: marquee 40s linear infinite;
+
+  @keyframes marquee {
+    from { transform: translateX(0); }
+    to { transform: translateX(-50%); }
+  }
+}
+
+@theme inline {
+  --color-bg: var(--bg);
+  --color-fg: var(--fg);
+  /* NUEVO: acentos que cambian con el tema */
+  --color-accent: var(--accent);
+  --color-accent-2: var(--accent-2);
+}
+
+:root {
+  color-scheme: dark;
+  --bg: #05060a;
+  --fg: #f5f5f7;
+  --accent: #a8a29e;
+  --accent-2: #a8a29e;
+  --glass-bg: rgba(255, 255, 255, 0.06);
+  --glass-border: rgba(255, 255, 255, 0.12);
+  --glass-highlight: rgba(255, 255, 255, 0.08);
+  --glass-shadow: rgba(0, 0, 0, 0.35);
+  --blob-1: rgba(255, 255, 255, 0.15);  /* grafito claro */
+  --blob-2: rgba(168, 162, 158, 0.15);  /* gris piedra */
+  --blob-3: rgba(166, 132, 92, 0.15);   /* bronce tenue */
+  --grain-opacity: 0.05;
+}
+
+[data-theme="light"] {
+  color-scheme: light;
+  --bg: #f5f5f7;
+  --fg: #1d1d1f;
+  --accent: #430fff;
+  --accent-2: #0827b2;
+  --glass-bg: rgba(255, 255, 255, 0.55);
+  --glass-border: rgba(0, 0, 0, 0.08);
+  --glass-highlight: rgba(255, 255, 255, 0.9);
+  --glass-shadow: rgba(0, 0, 0, 0.08);
+  --blob-1: rgba(0, 0, 0, 0.15);        /* gris suave */
+  --blob-2: rgba(214, 201, 182, 0.55);  /* arena */
+  --blob-3: rgba(176, 184, 190, 0.45);  /* plata */
+  --grain-opacity: 0.035;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+/* NUEVO: el menú fijo ya no tapa los títulos al navegar con # */
+section {
+  scroll-margin-top: 96px;
+}
+
+body {
+  background: var(--bg);
+  color: var(--fg);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+  /* Se quitó la transition de color: ahora el cambio de tema lo anima la onda circular */
+}
+
+@utility glass {
+  background: var(--glass-bg);
+  -webkit-backdrop-filter: blur(24px) saturate(180%);
+  backdrop-filter: blur(24px) saturate(180%);
+  border: 1px solid var(--glass-border);
+  box-shadow:
+    inset 0 1px 0 var(--glass-highlight),
+    0 8px 32px var(--glass-shadow);
+}
+
+/* NUEVO: etiqueta pequeña sobre los títulos de sección */
+@utility eyebrow {
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--accent-2);
+}
+
+/* NUEVO: luz que sigue el cursor en las tarjetas */
+.spotlight {
+  position: relative;
+  overflow: hidden;
+  transition: transform 0.3s ease, border-color 0.3s ease;
+}
+.spotlight::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s ease;
+  background: radial-gradient(
+    420px circle at var(--x, 50%) var(--y, 50%),
+    color-mix(in srgb, var(--accent) 22%, transparent),
+    color-mix(in srgb, var(--accent-2) 6%, transparent) 40%,
+    transparent 70%
+  );
+}
+.spotlight:hover {
+  transform: translateY(-4px);
+  border-color: color-mix(in srgb, var(--accent) 45%, transparent);
+}
+.spotlight:hover::before {
+  opacity: 1;
+}
+
+/* NUEVO: transición circular del tema */
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation: none;
+  mix-blend-mode: normal;
+}
+
+/* NUEVO: respeta a quien desactiva animaciones en su sistema */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
